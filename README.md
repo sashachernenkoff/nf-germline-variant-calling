@@ -8,31 +8,42 @@ A Nextflow DSL2 pipeline for GATK4 best-practices germline variant calling from 
 
 ## Pipeline overview
 
+![Pipeline DAG](pipeline.png)
+
 ```
 BAM input (per sample)
-    │
-    ▼
-MarkDuplicates          - flag PCR and optical duplicates
-    │
-    ▼
-BQSR                    - recalibrate base quality scores
-    │
-    ▼
-mosdepth                - coverage QC; samples below threshold are excluded
-    │
-    ▼
-HaplotypeCaller         - call variants in GVCF mode (per sample, AS annotations)
-    │
-    ▼
-GenomicsDBImport        - merge GVCFs across samples (scattered across 100 intervals)
-    │
-    ▼
-GenotypeGVCFs           - joint genotyping (per interval shard)
-    │
-    ▼
-Variant filtering       - hard filtering (default) or AS-VQSR (--vqsr, large cohorts)
-    │
-    ▼
+    |
+    v
+MarkDuplicates       - flag PCR and optical duplicates
+    |
+    v
+BQSR                 - recalibrate base quality scores
+    |
+    v
+mosdepth             - coverage QC; samples below --min_coverage are excluded
+    |
+    v
+HaplotypeCaller      - call variants in GVCF mode (per sample, AS annotations)
+    |
+    v
+[collect all GVCFs, scatter by interval shard]
+    |
+    v
+GenomicsDBImport     - merge GVCFs per interval shard (parallelised)
+    |
+    v
+GenotypeGVCFs        - joint genotyping per interval shard (parallelised)
+    |
+    v
+GatherVcfs           - merge per-shard VCFs into a single cohort VCF
+    |
+    v
+Variant filtering    - hard filtering (default) or AS-VQSR (--vqsr, large cohorts)
+    |
+    v
+Final QC             - ValidateVariants, sites-only VCF, bcftools stats
+    |
+    v
 cohort.filtered.vcf.gz
 ```
 
@@ -40,7 +51,7 @@ cohort.filtered.vcf.gz
 
 ## Requirements
 
-- [Nextflow](https://www.nextflow.io/) ≥ 23.04
+- [Nextflow](https://www.nextflow.io/) >= 23.04
 - [Docker](https://www.docker.com/)
 - Java 11 or later (required by Nextflow)
 
@@ -62,12 +73,13 @@ nextflow run main.nf \
   --intervals_dir /path/to/scattered_intervals/
 ```
 
-**Large cohort with AS-VQSR (≥30 samples recommended):**
+**Large cohort with AS-VQSR (>=30 samples recommended):**
 
 ```bash
 nextflow run main.nf \
   -profile aws \
-  --input   sample_sheet.tsv \
+  -w s3://your-bucket/work \
+  --input   s3://your-bucket/inputs/sample_sheet.tsv \
   --ref     s3://your-bucket/ref/GRCh38.fa \
   --outdir  s3://your-bucket/results \
   --dbsnp   s3://your-bucket/known-sites/dbsnp138.vcf.gz \
@@ -113,7 +125,7 @@ All GATK resource bundle files are available from the [Broad public bucket](http
 
 ### Scatter intervals
 
-The pipeline scatters GenomicsDBImport and GenotypeGVCFs across 100 interval shards. Generate them once with:
+The pipeline scatters GenomicsDBImport and GenotypeGVCFs across interval shards. Generate them once with:
 
 ```bash
 gatk SplitIntervals \
@@ -122,7 +134,7 @@ gatk SplitIntervals \
   -O intervals/
 ```
 
-Then pass the output directory with `--intervals_dir intervals/`.
+Then pass the output directory with `--intervals_dir intervals/`. For the single-chromosome demo, a single interval list covering that chromosome is sufficient.
 
 ---
 
@@ -140,6 +152,7 @@ Then pass the output directory with `--intervals_dir intervals/`.
 | `--omni` | - | Omni VCF (AS-VQSR only) |
 | `--intervals_dir` | *required* | Directory of scattered `.interval_list` files |
 | `--vqsr` | `false` | Use AS-VQSR instead of hard filtering |
+| `--min_coverage` | `10` | Minimum mean genome coverage; samples below this are excluded before variant calling |
 | `--optical_dup_pixel_dist` | `2500` | `2500` for patterned flowcells (NovaSeq); `100` for unpatterned |
 
 ---
@@ -166,27 +179,41 @@ nextflow run main.nf -profile aws ...
 ```
 results/
 ├── markdup/
-│   ├── HG001.markdup.bam
-│   └── HG001.markdup_metrics.txt
+│   ├── HG002.markdup.bam
+│   ├── HG002.markdup.bai
+│   └── HG002.markdup_metrics.txt
 ├── bqsr/
-│   └── HG001.bqsr.bam
+│   ├── HG002.bqsr.bam
+│   └── HG002.bqsr.bai
 ├── qc/
-│   └── HG001.mosdepth.summary.txt
+│   ├── HG002.mosdepth.summary.txt
+│   ├── HG002.mosdepth.global.dist.txt
+│   └── HG002.mosdepth.quantized.bed.gz
 ├── gvcfs/
-│   └── HG001.g.vcf.gz
-├── genomicsdb/
-│   └── shard_001/ ... shard_100/
+│   ├── HG002.g.vcf.gz
+│   └── HG002.g.vcf.gz.tbi
 ├── genotyped/
-│   └── shard_001.genotyped.vcf.gz ... shard_100.genotyped.vcf.gz
+│   ├── 0000-scattered.genotyped.vcf.gz
+│   └── 0000-scattered.genotyped.vcf.gz.tbi
 └── filtered/
-    └── cohort.filtered.vcf.gz
+    ├── cohort.raw.vcf.gz
+    ├── cohort.raw.vcf.gz.tbi
+    ├── cohort.filtered.vcf.gz
+    ├── cohort.filtered.vcf.gz.tbi
+    ├── cohort.filtered.sites_only.vcf.gz
+    ├── cohort.filtered.sites_only.vcf.gz.tbi
+    └── cohort.filtered.stats.txt
 ```
+
+GenomicsDB workspaces are intermediate and not copied to the output directory.
 
 ---
 
 ## Demo dataset
 
-Public demo runs use three [GIAB](https://www.nist.gov/programs-projects/genome-bottle) reference samples (HG001/HG002/HG003), which are freely available and have NIST-validated truth variant sets for benchmarking call accuracy.
+The public demo runs on a single [GIAB](https://www.nist.gov/programs-projects/genome-bottle) sample, HG002 (chr20 only), sourced from the public GIAB S3 bucket. GIAB provides NIST-validated truth variant sets for benchmarking.
+
+For a multi-sample joint-calling run, HG001, HG002, and HG003 full-genome BAMs are available on the public GIAB S3 bucket at `s3://giab/`.
 
 ---
 

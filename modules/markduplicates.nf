@@ -20,8 +20,8 @@ process MARK_DUPLICATES {
     tuple val(sample_id), path(bam), path(bai)   // bai staged alongside bam so GATK can find it
 
     output:
-    tuple val(sample_id), path("${sample_id}.markdup.bam"), path("${sample_id}.markdup.bai")
-    path "${sample_id}.markdup_metrics.txt"
+    tuple val(sample_id), path("${sample_id}.markdup.bam"), path("${sample_id}.markdup.bai"), emit: bam
+    path "${sample_id}.markdup_metrics.txt",                                                   emit: metrics
 
     script:
     """

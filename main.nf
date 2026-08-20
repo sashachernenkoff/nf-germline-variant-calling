@@ -97,7 +97,7 @@ workflow {
     // --------------------------------------------------------
 
     bqsr_ch = BQSR(
-        markdup_ch,
+        markdup_ch.bam,
         ref_ch,
         ref_fai_ch,
         ref_dict_ch,
@@ -113,9 +113,8 @@ workflow {
     mosdepth_ch = MOSDEPTH(bqsr_ch)
 
     // --------------------------------------------------------
-    // Coverage filter (replaces the 03b collect_qc shell script).
-    // Join bqsr output with mosdepth summary on sample_id, parse
-    // mean coverage from the summary file, drop failing samples.
+    // Coverage filter: join BQSR output with mosdepth summary on
+    // sample_id, parse mean coverage, drop samples below threshold.
     // --------------------------------------------------------
 
     pass_bqsr_ch = bqsr_ch
