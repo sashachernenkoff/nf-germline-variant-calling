@@ -1,0 +1,16 @@
+# Local only
+old/
+CLAUDE.md
+main.py
+
+# Nextflow
+.nextflow/
+.nextflow.log*
+work/
+results/
+
+# IDE
+.idea/
+
+# macOS
+.DS_Store
