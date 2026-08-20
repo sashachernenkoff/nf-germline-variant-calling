@@ -12,25 +12,25 @@ A Nextflow DSL2 pipeline for GATK4 best-practices germline variant calling from 
 BAM input (per sample)
     │
     ▼
-MarkDuplicates          — flag PCR and optical duplicates
+MarkDuplicates          - flag PCR and optical duplicates
     │
     ▼
-BQSR                    — recalibrate base quality scores
+BQSR                    - recalibrate base quality scores
     │
     ▼
-mosdepth                — coverage QC; samples below threshold are excluded
+mosdepth                - coverage QC; samples below threshold are excluded
     │
     ▼
-HaplotypeCaller         — call variants in GVCF mode (per sample, AS annotations)
+HaplotypeCaller         - call variants in GVCF mode (per sample, AS annotations)
     │
     ▼
-GenomicsDBImport        — merge GVCFs across samples (scattered across 100 intervals)
+GenomicsDBImport        - merge GVCFs across samples (scattered across 100 intervals)
     │
     ▼
-GenotypeGVCFs           — joint genotyping (per interval shard)
+GenotypeGVCFs           - joint genotyping (per interval shard)
     │
     ▼
-Variant filtering       — hard filtering (default) or AS-VQSR (--vqsr, large cohorts)
+Variant filtering       - hard filtering (default) or AS-VQSR (--vqsr, large cohorts)
     │
     ▼
 cohort.filtered.vcf.gz
@@ -136,8 +136,8 @@ Then pass the output directory with `--intervals_dir intervals/`.
 | `--dbsnp` | *required* | dbSNP VCF |
 | `--mills` | *required* | Mills indels VCF |
 | `--onekg` | *required* | 1000G SNPs VCF |
-| `--hapmap` | — | HapMap VCF (AS-VQSR only) |
-| `--omni` | — | Omni VCF (AS-VQSR only) |
+| `--hapmap` | - | HapMap VCF (AS-VQSR only) |
+| `--omni` | - | Omni VCF (AS-VQSR only) |
 | `--intervals_dir` | *required* | Directory of scattered `.interval_list` files |
 | `--vqsr` | `false` | Use AS-VQSR instead of hard filtering |
 | `--optical_dup_pixel_dist` | `2500` | `2500` for patterned flowcells (NovaSeq); `100` for unpatterned |
@@ -196,5 +196,6 @@ All processes run in pinned Docker images. No local tool installation required b
 
 | Process | Image |
 |---------|-------|
-| MarkDuplicates, BQSR, HaplotypeCaller, GenomicsDBImport, GenotypeGVCFs, VQSR | `broadinstitute/gatk:4.5.0.0` |
+| MarkDuplicates, BQSR, HaplotypeCaller, GenomicsDBImport, GenotypeGVCFs, GatherVcfs, VQSR, HardFilter, ValidateVcf | `broadinstitute/gatk:4.5.0.0` |
 | mosdepth | `quay.io/biocontainers/mosdepth:0.3.8--hd299d5a_0` |
+| VcfStats | `quay.io/biocontainers/bcftools:1.18--h8b25389_0` |
