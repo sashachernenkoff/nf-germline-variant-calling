@@ -58,7 +58,7 @@ process VQSR {
         --output cohort.snp.recal \\
         --tranches-file cohort.snp.tranches \\
         --tmp-dir . \\
-        --java-options "-Xmx56g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
 
     gatk ApplyVQSR \\
         --reference ${ref} \\
@@ -70,7 +70,7 @@ process VQSR {
         --truth-sensitivity-filter-level 99.0 \\
         --mode SNP \\
         --tmp-dir . \\
-        --java-options "-Xmx28g"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
 
     # --- INDEL AS-VQSR ---
     gatk VariantRecalibrator \\
@@ -93,7 +93,7 @@ process VQSR {
         --output cohort.indel.recal \\
         --tranches-file cohort.indel.tranches \\
         --tmp-dir . \\
-        --java-options "-Xmx56g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
 
     gatk ApplyVQSR \\
         --reference ${ref} \\
@@ -105,6 +105,6 @@ process VQSR {
         --truth-sensitivity-filter-level 99.0 \\
         --mode INDEL \\
         --tmp-dir . \\
-        --java-options "-Xmx28g"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }

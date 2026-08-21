@@ -38,6 +38,6 @@ process GENOTYPE_GVCFS {
         -G StandardAnnotation \\
         -G AS_StandardAnnotation \\
         --tmp-dir . \\
-        --java-options "-Xmx56g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }

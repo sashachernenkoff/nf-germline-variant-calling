@@ -43,7 +43,7 @@ process BQSR {
         --known-sites ${onekg} \\
         --output ${sample_id}.recal.table \\
         --tmp-dir . \\
-        --java-options "-Xmx28g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
 
     gatk ApplyBQSR \\
         --input ${bam} \\
@@ -52,6 +52,6 @@ process BQSR {
         --output ${sample_id}.bqsr.bam \\
         --create-output-bam-index true \\
         --tmp-dir . \\
-        --java-options "-Xmx28g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }

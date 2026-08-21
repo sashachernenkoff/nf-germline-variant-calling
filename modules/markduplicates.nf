@@ -33,6 +33,6 @@ process MARK_DUPLICATES {
         --OPTICAL_DUPLICATE_PIXEL_DISTANCE ${params.optical_dup_pixel_dist} \\
         --CREATE_INDEX true \\
         --TMP_DIR . \\
-        --java-options "-Xmx28g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }

@@ -38,6 +38,6 @@ process GENOMICS_DB_IMPORT {
         --batch-size 50 \\
         --genomicsdb-shared-posixfs-optimizations true \\
         --tmp-dir . \\
-        --java-options "-Xmx24g -XX:ParallelGCThreads=2"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }

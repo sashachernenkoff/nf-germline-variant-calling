@@ -44,6 +44,6 @@ process HAPLOTYPE_CALLER {
         -G AS_StandardAnnotation \\
         -G StandardHCAnnotation \\
         --tmp-dir . \\
-        --java-options "-Xmx28g -XX:ParallelGCThreads=4"
+        --java-options "-Xmx${(task.memory.toGiga() - 2).intValue()}g"
     """
 }
