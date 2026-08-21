@@ -9,7 +9,7 @@
 
 process VALIDATE_VCF {
 
-    container 'broadinstitute/gatk:4.5.0.0'
+    container params.gatk_container
 
     label 'cpu_4'
     label 'mem_16g'
@@ -56,7 +56,7 @@ process VALIDATE_VCF {
 
 process VCF_STATS {
 
-    container 'quay.io/biocontainers/bcftools:1.18--h8b25389_0'
+    container params.bcftools_container
 
     label 'cpu_4'
     label 'mem_16g'
@@ -78,9 +78,9 @@ process VCF_STATS {
     echo "--- PASS variant counts ---"
     echo -n "  SNPs (PASS):   "
     bcftools view --type snps --apply-filters PASS ${vcf} | \\
-        bcftools stats | grep "^SN.*number of SNPs" | awk '{print \$4}'
+        bcftools stats | grep "^SN.*number of SNPs" | awk -F'\\t' '{print \$4}'
     echo -n "  INDELs (PASS): "
     bcftools view --type indels --apply-filters PASS ${vcf} | \\
-        bcftools stats | grep "^SN.*number of indels" | awk '{print \$4}'
+        bcftools stats | grep "^SN.*number of indels" | awk -F'\\t' '{print \$4}'
     """
 }

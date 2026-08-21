@@ -16,6 +16,7 @@
 
 nextflow.enable.dsl = 2
 
+include { NORMALIZE_BAM      } from './modules/normalize'
 include { MARK_DUPLICATES    } from './modules/markduplicates'
 include { BQSR               } from './modules/bqsr'
 include { MOSDEPTH           } from './modules/mosdepth'
@@ -65,10 +66,8 @@ workflow {
         .map { row -> tuple(row.sample_id, file(row.bam), file(row.bam + '.bai')) }
 
     // --------------------------------------------------------
-    // Reference file channels - Channel.value() emits the same
-    // file(s) to every process invocation without re-staging.
-    // Index files are paired with their parent so Nextflow stages
-    // both into the same work directory; GATK finds them automatically.
+    // Reference and known-sites value channels (reused across all
+    // samples). Index/dict files travel with their parent file.
     // --------------------------------------------------------
 
     ref_ch      = Channel.value(file(params.ref))
@@ -87,10 +86,18 @@ workflow {
         : Channel.empty()
 
     // --------------------------------------------------------
+    // Preprocessing: normalise every input BAM (coordinate sort +
+    // ensure a read group + index) so the downstream GATK steps get
+    // valid input, whatever state the aligner produced.
+    // --------------------------------------------------------
+
+    normalized_ch = NORMALIZE_BAM(samples_ch)
+
+    // --------------------------------------------------------
     // Step 1: MarkDuplicates
     // --------------------------------------------------------
 
-    markdup_ch = MARK_DUPLICATES(samples_ch)
+    markdup_ch = MARK_DUPLICATES(normalized_ch.bam)
 
     // --------------------------------------------------------
     // Step 2: BQSR
@@ -107,14 +114,21 @@ workflow {
     )
 
     // --------------------------------------------------------
-    // Step 3: mosdepth coverage QC
+    // Step 3: mosdepth coverage QC, measured over the calling regions
+    // so the threshold reflects depth where variants are called.
     // --------------------------------------------------------
 
-    mosdepth_ch = MOSDEPTH(bqsr_ch)
+    target_intervals_ch = Channel
+        .fromPath("${params.intervals_dir}/*.interval_list", checkIfExists: true)
+        .collect()
+
+    mosdepth_ch = MOSDEPTH(bqsr_ch, target_intervals_ch)
 
     // --------------------------------------------------------
     // Coverage filter: join BQSR output with mosdepth summary on
-    // sample_id, parse mean coverage, drop samples below threshold.
+    // sample_id, read the mean depth over the target regions
+    // (total_region row), drop samples below threshold. Fail fast if
+    // no sample survives, rather than passing an empty cohort downstream.
     // --------------------------------------------------------
 
     pass_bqsr_ch = bqsr_ch
@@ -122,7 +136,7 @@ workflow {
         .filter { sample_id, bam, bai, summary ->
             def mean_cov = summary.text
                 .readLines()
-                .find { it.startsWith('total') }
+                .find { it.startsWith('total_region') }
                 ?.split('\t')[3]
                 ?.toFloat() ?: 0
             if (mean_cov < params.min_coverage) {
@@ -132,6 +146,7 @@ workflow {
             return true
         }
         .map { sample_id, bam, bai, summary -> tuple(sample_id, bam, bai) }
+        .ifEmpty { error "No samples passed the coverage filter (min_coverage=${params.min_coverage}x); nothing to genotype." }
 
     // --------------------------------------------------------
     // Step 4: HaplotypeCaller - per sample, coverage-filtered
@@ -146,13 +161,8 @@ workflow {
     )
 
     // --------------------------------------------------------
-    // Scatter setup: collect all GVCFs, combine with intervals.
-    //
-    // gvcf_ch emits N items (one per sample). After collect(),
-    // one item is emitted: a list of [gvcf, tbi] pairs.
-    // The .map() separates those into two flat lists.
-    // combine() pairs each of the 100 intervals with both lists,
-    // producing 100 channel items - one GenomicsDBImport job each.
+    // Scatter setup: collect all sample GVCFs and pair them with each
+    // interval shard - one GenomicsDBImport job per shard.
     // --------------------------------------------------------
 
     collected_ch = gvcf_ch
@@ -185,8 +195,8 @@ workflow {
     )
 
     // --------------------------------------------------------
-    // Gather: collect all 100 shard VCFs sorted by shard name
-    // (alphabetical = genomic order from SplitIntervals naming).
+    // Gather per-shard VCFs in genomic order (shard names from
+    // SplitIntervals sort into genomic order).
     // --------------------------------------------------------
 
     gathered_input_ch = genotyped_ch

@@ -10,7 +10,7 @@
 
 process HARD_FILTER {
 
-    container 'broadinstitute/gatk:4.5.0.0'
+    container params.gatk_container
 
     label 'cpu_4'
     label 'mem_16g'

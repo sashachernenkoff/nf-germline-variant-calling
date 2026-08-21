@@ -12,7 +12,7 @@
 
 process GENOMICS_DB_IMPORT {
 
-    container 'broadinstitute/gatk:4.5.0.0'
+    container params.gatk_container
 
     tag "${shard_name}"
 

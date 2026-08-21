@@ -9,7 +9,7 @@
 
 process HAPLOTYPE_CALLER {
 
-    container 'broadinstitute/gatk:4.5.0.0'
+    container params.gatk_container
 
     tag "${sample_id}"
 

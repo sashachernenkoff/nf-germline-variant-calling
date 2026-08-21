@@ -6,7 +6,7 @@
 
 process MARK_DUPLICATES {
 
-    container 'broadinstitute/gatk:4.5.0.0'
+    container params.gatk_container
 
     tag "${sample_id}"          // labels log lines: [MARK_DUPLICATES/HG001]
 

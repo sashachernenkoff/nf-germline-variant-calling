@@ -1,0 +1,8 @@
+# bcftools 1.18 with AWS CLI v2 for S3 staging on AWS Batch.
+# See Dockerfile.gatk for the wrapper rationale.
+FROM amazon/aws-cli:2.36.28 AS awscli
+
+FROM quay.io/biocontainers/bcftools:1.18--h8b25389_0
+COPY --from=awscli /usr/local/aws-cli /usr/local/aws-cli
+RUN printf '#!/bin/sh\nexport LD_LIBRARY_PATH=/usr/local/aws-cli/v2/current/dist:${LD_LIBRARY_PATH}\nexec /usr/local/aws-cli/v2/current/bin/aws "$@"\n' > /usr/local/bin/aws \
+    && chmod +x /usr/local/bin/aws

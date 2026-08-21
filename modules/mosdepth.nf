@@ -9,7 +9,7 @@
 
 process MOSDEPTH {
 
-    container 'quay.io/biocontainers/mosdepth:0.3.8--hd299d5a_0'
+    container params.mosdepth_container
 
     tag "${sample_id}"
 
@@ -21,6 +21,7 @@ process MOSDEPTH {
 
     input:
     tuple val(sample_id), path(bam), path(bai)
+    path interval_lists
 
     output:
     tuple val(sample_id), path("${sample_id}.mosdepth.summary.txt"), emit: summary
@@ -28,10 +29,17 @@ process MOSDEPTH {
 
     script:
     """
+    # BED of the calling regions, so coverage is measured where variants
+    # are actually called (reported as the summary's total_region row).
+    cat ${interval_lists} \\
+        | grep -v '^@' \\
+        | awk 'BEGIN{OFS="\\t"} {print \$1, \$2-1, \$3}' \\
+        | sort -k1,1 -k2,2n > targets.bed
+
     mosdepth \\
         --threads ${task.cpus} \\
         --no-per-base \\
-        --quantize 0:5:15:20:500: \\
+        --by targets.bed \\
         ${sample_id} \\
         ${bam}
     """
