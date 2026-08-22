@@ -14,7 +14,8 @@ process MARK_DUPLICATES {
     label 'mem_32g'
     label 'time_24h'
 
-    publishDir "${params.outdir}/markdup", mode: 'copy'
+    // Publish only the QC metrics; the BAM flows to BQSR via the work dir.
+    publishDir "${params.outdir}/markdup", mode: 'copy', pattern: '*_metrics.txt'
 
     input:
     tuple val(sample_id), path(bam), path(bai)   // bai staged alongside bam so GATK can find it

@@ -19,7 +19,8 @@ process BQSR {
     label 'mem_32g'
     label 'time_24h'
 
-    publishDir "${params.outdir}/bqsr", mode: 'copy'
+    // Not published: the recalibrated BAM is an intermediate consumed by
+    // mosdepth and HaplotypeCaller via the work dir.
 
     input:
     tuple val(sample_id), path(bam), path(bai)
