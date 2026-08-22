@@ -161,14 +161,12 @@ workflow {
     )
 
     // --------------------------------------------------------
-    // Scatter setup: collect all sample GVCFs and pair them with each
-    // interval shard - one GenomicsDBImport job per shard.
+    // Scatter setup: collect all sample GVCFs (and their indexes) into
+    // flat lists, reused across every interval shard.
     // --------------------------------------------------------
 
-    collected_ch = gvcf_ch
-        .map { sample_id, gvcf, tbi -> [ gvcf, tbi ] }
-        .collect()
-        .map { pairs -> [ pairs.collect { it[0] }, pairs.collect { it[1] } ] }
+    gvcfs_ch = gvcf_ch.map { sample_id, gvcf, tbi -> gvcf }.collect()
+    tbis_ch  = gvcf_ch.map { sample_id, gvcf, tbi -> tbi }.collect()
 
     intervals_ch = Channel
         .fromPath("${params.intervals_dir}/*.interval_list", checkIfExists: true)
@@ -178,9 +176,7 @@ workflow {
     // Step 5: GenomicsDBImport - one job per interval shard
     // --------------------------------------------------------
 
-    genomicsdb_ch = GENOMICS_DB_IMPORT(
-        intervals_ch.combine(collected_ch)
-    )
+    genomicsdb_ch = GENOMICS_DB_IMPORT(intervals_ch, gvcfs_ch, tbis_ch)
 
     // --------------------------------------------------------
     // Step 6: GenotypeGVCFs - one job per interval shard

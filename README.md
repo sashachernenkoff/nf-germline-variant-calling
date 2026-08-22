@@ -14,6 +14,9 @@ A Nextflow DSL2 pipeline for GATK4 best-practices germline variant calling from 
 BAM input (per sample)
     |
     v
+Normalize            - coordinate-sort, ensure a read group, index
+    |
+    v
 MarkDuplicates       - flag PCR and optical duplicates
     |
     v
@@ -46,6 +49,20 @@ Final QC             - ValidateVariants, sites-only VCF, bcftools stats
     v
 cohort.filtered.vcf.gz
 ```
+
+---
+
+## Example run
+
+A complete end-to-end run on the HG002 chr20 demo (AWS Batch) is captured in [`example_output/`](example_output/):
+
+- **[`report.html`](example_output/report.html)** - Nextflow execution report (per-process resources, timing, and status)
+- **[`timeline.html`](example_output/timeline.html)** - execution timeline
+- **`HG002.mosdepth.summary.txt`** - coverage QC over the calling regions (chr20 mean ~271x)
+- **`cohort.filtered.stats.txt`** - `bcftools stats` on the final VCF (112,888 SNPs, 22,206 indels)
+- **`cohort.filtered.head.vcf`** - the final cohort VCF, truncated to the header plus the first variant records
+
+These are small, curated artifacts; the full VCFs, GVCFs, and BAMs are regenerable by running the pipeline.
 
 ---
 
@@ -152,7 +169,7 @@ Then pass the output directory with `--intervals_dir intervals/`. For the single
 | `--omni` | - | Omni VCF (AS-VQSR only) |
 | `--intervals_dir` | *required* | Directory of scattered `.interval_list` files |
 | `--vqsr` | `false` | Use AS-VQSR instead of hard filtering |
-| `--min_coverage` | `10` | Minimum mean genome coverage; samples below this are excluded before variant calling |
+| `--min_coverage` | `10` | Minimum mean coverage over the calling regions; samples below this are excluded before variant calling |
 | `--optical_dup_pixel_dist` | `2500` | `2500` for patterned flowcells (NovaSeq); `100` for unpatterned |
 
 ---

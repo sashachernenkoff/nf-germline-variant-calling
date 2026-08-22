@@ -1,0 +1,74 @@
+##fileformat=VCFv4.2
+##ALT=<ID=NON_REF,Description="Represents any possible alternative allele not already represented at this location by REF and ALT">
+##FILTER=<ID=FS200,Description="FS > 200.0">
+##FILTER=<ID=FS60,Description="FS > 60.0">
+##FILTER=<ID=LowQual,Description="Low quality">
+##FILTER=<ID=MQ40,Description="MQ < 40.0">
+##FILTER=<ID=MQRankSum-12.5,Description="MQRankSum < -12.5">
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=QD2,Description="QD < 2.0">
+##FILTER=<ID=ReadPosRankSum-20,Description="ReadPosRankSum < -20.0">
+##FILTER=<ID=ReadPosRankSum-8,Description="ReadPosRankSum < -8.0">
+##FILTER=<ID=SOR10,Description="SOR > 10.0">
+##FILTER=<ID=SOR3,Description="SOR > 3.0">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MIN_DP,Number=1,Type=Integer,Description="Minimum DP observed within the GVCF block">
+##FORMAT=<ID=PGT,Number=1,Type=String,Description="Physical phasing haplotype information, describing how the alternate alleles are phased in relation to one another; will always be heterozygous and is not intended to describe called alleles">
+##FORMAT=<ID=PID,Number=1,Type=String,Description="Physical phasing ID information, where each unique ID within a given sample (but not across samples) connects records within a phasing group">
+##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##FORMAT=<ID=PS,Number=1,Type=Integer,Description="Phasing set (typically the position of the first variant in the set)">
+##FORMAT=<ID=RGQ,Number=1,Type=Integer,Description="Unconditional reference genotype confidence, encoded as a phred quality -10*log10 p(genotype call is wrong)">
+##FORMAT=<ID=SB,Number=4,Type=Integer,Description="Per-sample component statistics which comprise the Fisher's Exact Test to detect strand bias.">
+##GATKCommandLine=<ID=GenomicsDBImport,CommandLine="GenomicsDBImport --genomicsdb-workspace-path gendb_0000-chr20 --variant HG002.g.vcf.gz --batch-size 50 --genomicsdb-shared-posixfs-optimizations true --intervals 0000-chr20.interval_list --tmp-dir . --genomicsdb-segment-size 1048576 --genomicsdb-vcf-buffer-size 16384 --overwrite-existing-genomicsdb-workspace false --consolidate false --validate-sample-name-map false --merge-input-intervals false --reader-threads 1 --max-num-intervals-to-import-in-parallel 1 --merge-contigs-into-num-partitions 0 --bypass-feature-reader false --avoid-nio false --genomicsdb-use-gcs-hdfs-connector false --interval-set-rule UNION --interval-padding 0 --interval-exclusion-padding 0 --interval-merging-rule ALL --read-validation-stringency SILENT --seconds-between-progress-updates 10.0 --disable-sequence-dictionary-validation false --create-output-bam-index true --create-output-bam-md5 false --create-output-variant-index true --create-output-variant-md5 false --max-variants-per-shard 0 --lenient false --add-output-sam-program-record true --add-output-vcf-command-line true --cloud-prefetch-buffer 0 --cloud-index-prefetch-buffer 0 --disable-bam-index-caching false --sites-only-vcf-output false --help false --version false --showHidden false --verbosity INFO --QUIET false --use-jdk-deflater false --use-jdk-inflater false --gcs-max-retries 20 --gcs-project-for-requester-pays  --disable-tool-default-read-filters false",Version="4.5.0.0",Date="August 22, 2026 at 6:32:37 AM GMT">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=AS_BaseQRankSum,Number=A,Type=Float,Description="allele specific Z-score from Wilcoxon rank sum test of each Alt Vs. Ref base qualities">
+##INFO=<ID=AS_FS,Number=A,Type=Float,Description="allele specific phred-scaled p-value using Fisher's exact test to detect strand bias of each alt allele">
+##INFO=<ID=AS_InbreedingCoeff,Number=A,Type=Float,Description="Allele-specific inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
+##INFO=<ID=AS_MQ,Number=A,Type=Float,Description="Allele-specific RMS Mapping Quality">
+##INFO=<ID=AS_MQRankSum,Number=A,Type=Float,Description="Allele-specific Mapping Quality Rank Sum">
+##INFO=<ID=AS_QD,Number=A,Type=Float,Description="Allele-specific Variant Confidence/Quality by Depth">
+##INFO=<ID=AS_RAW_BaseQRankSum,Number=1,Type=String,Description="raw data for allele specific rank sum test of base qualities">
+##INFO=<ID=AS_RAW_MQ,Number=1,Type=String,Description="Allele-specfic raw data for RMS Mapping Quality">
+##INFO=<ID=AS_RAW_MQRankSum,Number=1,Type=String,Description="Allele-specfic raw data for Mapping Quality Rank Sum">
+##INFO=<ID=AS_RAW_ReadPosRankSum,Number=1,Type=String,Description="allele specific raw data for rank sum test of read position bias">
+##INFO=<ID=AS_ReadPosRankSum,Number=A,Type=Float,Description="allele specific Z-score from Wilcoxon rank sum test of each Alt vs. Ref read position bias">
+##INFO=<ID=AS_SB_TABLE,Number=1,Type=String,Description="Allele-specific forward/reverse read counts for strand bias tests. Includes the reference and alleles separated by |.">
+##INFO=<ID=AS_SOR,Number=A,Type=Float,Description="Allele specific strand Odds Ratio of 2x|Alts| contingency table to detect allele specific strand bias">
+##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP Membership">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth; some reads may have been filtered">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Stop position of the interval">
+##INFO=<ID=ExcessHet,Number=1,Type=Float,Description="Phred-scaled p-value for exact test of excess heterozygosity">
+##INFO=<ID=FS,Number=1,Type=Float,Description="Phred-scaled p-value using Fisher's exact test to detect strand bias">
+##INFO=<ID=InbreedingCoeff,Number=1,Type=Float,Description="Inbreeding coefficient as estimated from the genotype likelihoods per-sample when compared against the Hardy-Weinberg expectation">
+##INFO=<ID=MLEAC,Number=A,Type=Integer,Description="Maximum likelihood expectation (MLE) for the allele counts (not necessarily the same as the AC), for each ALT allele, in the same order as listed">
+##INFO=<ID=MLEAF,Number=A,Type=Float,Description="Maximum likelihood expectation (MLE) for the allele frequency (not necessarily the same as the AF), for each ALT allele, in the same order as listed">
+##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+##INFO=<ID=MQRankSum,Number=1,Type=Float,Description="Z-score From Wilcoxon rank sum test of Alt vs. Ref read mapping qualities">
+##INFO=<ID=QD,Number=1,Type=Float,Description="Variant Confidence/Quality by Depth">
+##INFO=<ID=RAW_MQandDP,Number=2,Type=Integer,Description="Raw data (sum of squared MQ and total depth) for improved RMS Mapping Quality calculation. Incompatible with deprecated RAW_MQ formulation.">
+##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias">
+##INFO=<ID=SOR,Number=1,Type=Float,Description="Symmetric Odds Ratio of 2x2 contingency table to detect strand bias">
+##contig=<ID=chr1,length=248956422,assembly=GRCh38.d1.vd1.fa>
+##contig=<ID=chr2,length=242193529,assembly=GRCh38.d1.vd1.fa>
+##contig=... ('remaining contigs omitted for brevity')
+##reference=file:///tmp/nxf.KBSvoCxUDl/GRCh38.d1.vd1.fa
+##source=GenomicsDBImport
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG002
+chr20	61458	.	A	C	72.64	QD2;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=-6.600;AS_FS=56.687;AS_MQ=64.19;AS_MQRankSum=0.000;AS_QD=0.32;AS_ReadPosRankSum=4.400;AS_SOR=4.225;BaseQRankSum=-6.565e+00;DP=239;ExcessHet=0.0000;FS=56.687;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=0.32;ReadPosRankSum=4.46;SOR=4.225	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:186,44:230:80:1|0:61446_T_C:80,0,5293:61446
+chr20	61540	.	A	G	5133.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=-9.600;AS_FS=225.741;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=17.40;AS_ReadPosRankSum=0.300;AS_SOR=3.093;BaseQRankSum=-9.537e+00;DP=302;ExcessHet=0.0000;FS=225.741;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=17.40;ReadPosRankSum=0.308;SOR=3.093	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:155,140:295:99:0|1:61540_A_G:5141,0,5967:61540
+chr20	61558	.	T	A	4323.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=-4.300;AS_FS=212.095;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=14.81;AS_ReadPosRankSum=0.800;AS_SOR=3.327;BaseQRankSum=-4.204e+00;DP=295;ExcessHet=0.0000;FS=212.095;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=14.81;ReadPosRankSum=0.874;SOR=3.327	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:175,117:292:99:0|1:61540_A_G:4331,0,6979:61540
+chr20	61561	.	G	T	4087.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=8.000;AS_FS=203.359;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=14.39;AS_ReadPosRankSum=1.500;AS_SOR=3.312;BaseQRankSum=8.04;DP=287;ExcessHet=0.0000;FS=203.359;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=14.39;ReadPosRankSum=1.51;SOR=3.312	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:174,110:284:99:0|1:61540_A_G:4095,0,6975:61540
+chr20	61566	.	T	C	3697.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=3.100;AS_FS=192.039;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=13.25;AS_ReadPosRankSum=1.100;AS_SOR=3.249;BaseQRankSum=3.13;DP=282;ExcessHet=0.0000;FS=192.039;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=13.25;ReadPosRankSum=1.14;SOR=3.249	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:178,101:279:99:0|1:61540_A_G:3705,0,7170:61540
+chr20	61568	.	T	C	3526.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=-8.600;AS_FS=193.643;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=12.78;AS_ReadPosRankSum=1.400;AS_SOR=3.451;BaseQRankSum=-8.571e+00;DP=279;ExcessHet=0.0000;FS=193.643;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=12.78;ReadPosRankSum=1.42;SOR=3.451	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:179,97:276:99:0|1:61540_A_G:3534,0,7224:61540
+chr20	61580	.	A	C	2482.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=2.500;AS_FS=185.601;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=9.41;AS_ReadPosRankSum=2.200;AS_SOR=3.747;BaseQRankSum=2.56;DP=267;ExcessHet=0.0000;FS=185.601;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=9.40;ReadPosRankSum=2.20;SOR=3.747	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:191,73:264:99:0|1:61540_A_G:2490,0,7800:61540
+chr20	61581	.	C	T	2398.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=8.300;AS_FS=178.837;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=9.16;AS_ReadPosRankSum=2.000;AS_SOR=3.685;BaseQRankSum=8.36;DP=265;ExcessHet=0.0000;FS=178.837;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=9.16;ReadPosRankSum=2.04;SOR=3.685	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:191,71:262:99:0|1:61540_A_G:2406,0,7806:61540
+chr20	61622	.	C	T	1025.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=4.100;AS_FS=171.410;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=4.28;AS_ReadPosRankSum=-5.300;AS_SOR=5.941;BaseQRankSum=4.18;DP=242;ExcessHet=0.0000;FS=171.410;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=4.27;ReadPosRankSum=-5.247e+00;SOR=5.941	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:201,39:240:99:0|1:61540_A_G:1033,0,8323:61540
+chr20	61624	.	C	T	941.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=3.900;AS_FS=183.396;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=3.96;AS_ReadPosRankSum=-5.500;AS_SOR=7.275;BaseQRankSum=3.99;DP=240;ExcessHet=0.0000;FS=183.396;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=3.96;ReadPosRankSum=-5.406e+00;SOR=7.275	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:201,37:238:99:0|1:61540_A_G:949,0,8329:61540
+chr20	61625	.	A	T	938.64	FS60;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=4.600;AS_FS=181.827;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=3.93;AS_ReadPosRankSum=-5.800;AS_SOR=7.275;BaseQRankSum=4.67;DP=241;ExcessHet=0.0000;FS=181.827;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=3.93;ReadPosRankSum=-5.774e+00;SOR=7.275	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:202,37:239:99:0|1:61540_A_G:946,0,8371:61540
+chr20	61635	.	G	A	419.64	FS60;QD2;SOR3	AC=1;AF=0.500;AN=2;AS_BaseQRankSum=7.000;AS_FS=132.995;AS_MQ=70.00;AS_MQRankSum=0.000;AS_QD=1.81;AS_ReadPosRankSum=-5.300;AS_SOR=6.516;BaseQRankSum=7.05;DP=234;ExcessHet=0.0000;FS=132.995;MLEAC=1;MLEAF=0.500;MQ=70.00;MQRankSum=0.00;QD=1.81;ReadPosRankSum=-5.258e+00;SOR=6.516	GT:AD:DP:GQ:PGT:PID:PL:PS	0|1:207,25:232:99:0|1:61540_A_G:427,0,8617:61540
