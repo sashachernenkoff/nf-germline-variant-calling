@@ -1,8 +1,9 @@
 # mosdepth 0.3.8 with AWS CLI v2 for S3 staging on AWS Batch.
 # See Dockerfile.gatk for the wrapper rationale.
-FROM amazon/aws-cli:2.36.28 AS awscli
+# Base images are pinned by digest for reproducible builds (see docker/versions.md).
+FROM amazon/aws-cli:2.36.28@sha256:9e94ede8b677fe5456a152fd6698a6726810160497882123bfd9dd40a5671d74 AS awscli
 
-FROM quay.io/biocontainers/mosdepth:0.3.8--hd299d5a_0
+FROM quay.io/biocontainers/mosdepth:0.3.8--hd299d5a_0@sha256:2decf63be02007796b4d1ab8389e99564a8c2eebeb5bad6983bdb1d7a99a657f
 COPY --from=awscli /usr/local/aws-cli /usr/local/aws-cli
 RUN printf '#!/bin/sh\nexport LD_LIBRARY_PATH=/usr/local/aws-cli/v2/current/dist:${LD_LIBRARY_PATH}\nexec /usr/local/aws-cli/v2/current/bin/aws "$@"\n' > /usr/local/bin/aws \
     && chmod +x /usr/local/bin/aws

@@ -1,9 +1,10 @@
 # GATK 4.5.0.0 with AWS CLI v2 for S3 staging on AWS Batch.
 # The CLI is copied from the official image and exposed via a wrapper that
 # points LD_LIBRARY_PATH at its bundled libraries, so it runs on any base.
-FROM amazon/aws-cli:2.36.28 AS awscli
+# Base images are pinned by digest for reproducible builds (see docker/versions.md).
+FROM amazon/aws-cli:2.36.28@sha256:9e94ede8b677fe5456a152fd6698a6726810160497882123bfd9dd40a5671d74 AS awscli
 
-FROM broadinstitute/gatk:4.5.0.0
+FROM broadinstitute/gatk:4.5.0.0@sha256:8a29403b528a417cd1630c33affe82726019788e24e4dfe00e2586c6b4195e9f
 COPY --from=awscli /usr/local/aws-cli /usr/local/aws-cli
 RUN printf '#!/bin/sh\nexport LD_LIBRARY_PATH=/usr/local/aws-cli/v2/current/dist:${LD_LIBRARY_PATH}\nexec /usr/local/aws-cli/v2/current/bin/aws "$@"\n' > /usr/local/bin/aws \
     && chmod +x /usr/local/bin/aws

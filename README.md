@@ -257,7 +257,7 @@ For a multi-sample joint-calling run, HG001, HG002, and HG003 full-genome BAMs a
 
 ## Containers
 
-All processes run in pinned Docker images. No local tool installation required beyond Nextflow and Docker. The `aws` profile uses ECR copies of these images with the AWS CLI added for S3 staging, built via `docker/build_and_push.sh`.
+All processes run in pinned Docker images. No local tool installation required beyond Nextflow and Docker. The `aws` profile uses ECR copies of these images with the AWS CLI added for S3 staging, built via `docker/build_and_push.sh`. Base images are pinned by digest for reproducible builds; see [`docker/versions.md`](docker/versions.md).
 
 | Process | Image |
 |---------|-------|
