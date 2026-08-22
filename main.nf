@@ -56,6 +56,13 @@ workflow {
         check_required(params.omni,   'omni')
     }
 
+    // AWS Batch deployment settings (from env vars or --params); see conf/aws.config
+    if (workflow.profile.tokenize(',').contains('aws')) {
+        check_required(params.ecr_registry,   'ecr_registry (set NF_ECR_REGISTRY)')
+        check_required(params.batch_queue,    'batch_queue (set NF_BATCH_QUEUE)')
+        check_required(params.batch_job_role, 'batch_job_role (set NF_BATCH_JOB_ROLE)')
+    }
+
     // --------------------------------------------------------
     // Sample channel - one tuple per row of the sample sheet.
     // --------------------------------------------------------

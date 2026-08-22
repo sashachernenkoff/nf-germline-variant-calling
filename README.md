@@ -191,6 +191,27 @@ nextflow run main.nf -profile aws ...
 
 ---
 
+## AWS deployment
+
+The `aws` profile reads deployment-specific settings from environment variables, so no account details live in the repo. Build and push the tool images to your own ECR once:
+
+```bash
+bash docker/build_and_push.sh
+```
+
+Then set these before running with `-profile aws`:
+
+```bash
+export NF_ECR_REGISTRY=<account>.dkr.ecr.<region>.amazonaws.com
+export NF_BATCH_QUEUE=<your-batch-queue>
+export NF_BATCH_JOB_ROLE=arn:aws:iam::<account>:role/<your-batch-job-role>
+export AWS_REGION=us-east-1   # optional; defaults to us-east-1
+```
+
+Any of these can also be passed on the command line (e.g. `--batch_queue ...`). Missing values fail fast with a clear error. The S3 bucket is supplied per run via `-w` and the `--input`/`--ref`/`--outdir` paths.
+
+---
+
 ## Output
 
 ```
@@ -236,7 +257,7 @@ For a multi-sample joint-calling run, HG001, HG002, and HG003 full-genome BAMs a
 
 ## Containers
 
-All processes run in pinned Docker images. No local tool installation required beyond Nextflow and Docker.
+All processes run in pinned Docker images. No local tool installation required beyond Nextflow and Docker. The `aws` profile uses ECR copies of these images with the AWS CLI added for S3 staging, built via `docker/build_and_push.sh`.
 
 | Process | Image |
 |---------|-------|
